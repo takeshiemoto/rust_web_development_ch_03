@@ -562,6 +562,7 @@ name = "rust_web_development_ch_03"
 version = "0.1.0"
 dependencies = [
  "serde",
+ "serde_json",
  "tokio",
  "warp",
 ]
