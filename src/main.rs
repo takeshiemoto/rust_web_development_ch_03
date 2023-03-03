@@ -1,4 +1,3 @@
-mod error;
 mod routes;
 mod store;
 mod types;
@@ -6,6 +5,7 @@ mod types;
 use crate::routes::answer::add_answer;
 use crate::routes::question::{add_question, delete_question, get_questions, update_question};
 use crate::store::Store;
+use handle_errors::return_error;
 
 use warp::http::Method;
 use warp::Filter;
@@ -61,7 +61,7 @@ async fn main() {
         .or(add_answer)
         .or(delete_question)
         .with(cors)
-        .recover(error::return_error);
+        .recover(return_error);
 
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
 }

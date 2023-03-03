@@ -1,7 +1,7 @@
-use crate::error;
 use crate::store::Store;
 use crate::types::pagination::extract_pagination;
 use crate::types::question::{Question, QuestionId};
+use handle_errors::Error;
 use std::collections::HashMap;
 use warp::http::StatusCode;
 
@@ -40,7 +40,7 @@ pub async fn update_question(
 ) -> Result<impl warp::Reply, warp::Rejection> {
     match store.questions.write().await.get_mut(&QuestionId(id)) {
         Some(q) => *q = question,
-        None => return Err(warp::reject::custom(error::Error::QuestionNotFound)),
+        None => return Err(warp::reject::custom(Error::QuestionNotFound)),
     }
 
     Ok(warp::reply::with_status("Question updated", StatusCode::OK))
@@ -51,7 +51,7 @@ pub async fn delete_question(
     store: Store,
 ) -> Result<impl warp::Reply, warp::Rejection> {
     match store.questions.write().await.remove(&QuestionId(id)) {
-        Some(_) => return Ok(warp::reply::with_status("Question deleted", StatusCode::OK)),
-        None => return Err(warp::reject::custom(error::Error::QuestionNotFound)),
+        Some(_) => Ok(warp::reply::with_status("Question deleted", StatusCode::OK)),
+        None => Err(warp::reject::custom(Error::QuestionNotFound)),
     }
 }
